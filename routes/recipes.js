@@ -30,13 +30,14 @@ router.get("/", async (req, res) => {
 // -----------get recipe by id-------------
 router.get("/:id", checkAdmin, checkId, async (req, res) => {
   try {
-    const recipe = await Recipe.findById(req.params.id).populate({
-      path: "comments",
-      populate: {
-        path: "owner",
-        select: "-__v -email -likes -role ",
-      },
-    })
+    const recipe = await Recipe.findById(req.params.id)
+      .populate({
+        path: "comments",
+        populate: {
+          path: "owner",
+          select: "-__v -email -likes -role ",
+        },
+      })
     if (!recipe) return res.status(404).send("recipe not found")
     res.json(recipe)
   } catch (error) {
@@ -47,13 +48,13 @@ router.get("/:id", checkAdmin, checkId, async (req, res) => {
 
 router.post("/", checkToken, validateBody(recipeAddjoi), async (req, res) => {
   try {
-    const { title, photo, ingredients, steps } = req.body
-
+    const { title, photo, ingredients, steps, types } = req.body
     const recipe = new Recipe({
       title,
       photo,
       ingredients,
       steps,
+      types,
     })
     await recipe.save()
     res.json(recipe)
@@ -66,11 +67,11 @@ router.post("/", checkToken, validateBody(recipeAddjoi), async (req, res) => {
 
 router.put("/:id", checkAdmin, checkId, validateBody(recipeEditjoi), async (req, res) => {
   try {
-    const { title, photo, ingredients, stpes } = req.body
+    const { title, photo, ingredients, stpes, types } = req.body
 
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
-      { $set: { title, title, ingredients, stpes, photo } },
+      { $set: { title, title, ingredients, stpes, photo, types } },
       { new: true }
     )
     if (!recipe) return res.status(404).send("recipe not found")

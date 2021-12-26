@@ -55,7 +55,7 @@ router.post("/add-admin", checkAdmin, validateBody(signupJoi), async (req, res) 
       firstName,
       lastName,
       email,
-      password,
+      password: hash,
       avatar,
       role: "Admin",
     })
@@ -65,7 +65,7 @@ router.post("/add-admin", checkAdmin, validateBody(signupJoi), async (req, res) 
 
     res.json(user)
   } catch (error) {
-    res.status(500).send(error.message)
+    return res.status(500).send(error.message)
   }
 })
 
@@ -89,7 +89,7 @@ router.post("/login", validateBody(loginJoi), async (req, res) => {
   }
 })
 // -------------login Admin--------
-router.post("/login/adman", validateBody(loginJoi), async (req, res) => {
+router.post("/login/admin", validateBody(loginJoi), async (req, res) => {
   try {
     const { email, password } = req.body
 
