@@ -22,6 +22,7 @@ router.get("/", async (req, res) => {
           select: "-password -email -like -role ",
         },
       })
+      .populate({ path: "owner", select: "firstName lastName" })
     res.json(recipe)
   } catch (error) {
     return res.status(500).send(error.message)
@@ -38,6 +39,14 @@ router.get("/:id", checkAdmin, checkId, async (req, res) => {
           select: "-__v -email -likes -role ",
         },
       })
+      .populate({
+        path: "owner",
+        populate: {
+          path: "owner",
+          select: "-password ",
+        },
+      })
+
     if (!recipe) return res.status(404).send("recipe not found")
     res.json(recipe)
   } catch (error) {
@@ -48,13 +57,14 @@ router.get("/:id", checkAdmin, checkId, async (req, res) => {
 
 router.post("/", checkToken, validateBody(recipeAddjoi), async (req, res) => {
   try {
-    const { title, photo, ingredients, steps, types } = req.body
+    const { title, types, photo, ingredients, calories } = req.body
     const recipe = new Recipe({
       title,
+      types,
       photo,
       ingredients,
-      steps,
-      types,
+      calories,
+      owner: req.userId,
     })
     await recipe.save()
     res.json(recipe)
@@ -65,13 +75,17 @@ router.post("/", checkToken, validateBody(recipeAddjoi), async (req, res) => {
 })
 // ----------edit recipe-by id--------
 
-router.put("/:id", checkAdmin, checkId, validateBody(recipeEditjoi), async (req, res) => {
+router.put("/:id", checkToken, checkId, validateBody(recipeEditjoi), async (req, res) => {
   try {
-    const { title, photo, ingredients, stpes, types } = req.body
+    const { title, types, photo, ingredients, calories } = req.body
+
+    const recipeFound = await Recipe.findById(req.params.id)
+    if (recipeFound.owner.role === "Admin" && recipeFound.owner._id != req.userId)
+      return res.status(403).json("unauthorized action")
 
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
-      { $set: { title, title, ingredients, stpes, photo, types } },
+      { $set: { title, types, photo, ingredients, calories } },
       { new: true }
     )
     if (!recipe) return res.status(404).send("recipe not found")
