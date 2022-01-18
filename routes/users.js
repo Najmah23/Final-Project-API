@@ -112,7 +112,7 @@ router.post("/login/admin", validateBody(loginJoi), async (req, res) => {
 
 router.get("/profile", checkToken, async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-__v -password").populate("likes")
+    const user = await User.findById(req.userId).select("-__v -password").populate("likes").populate("myRecipes")
     res.json(user)
   } catch (error) {
     return res.status(500).send(error.message)

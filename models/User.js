@@ -7,7 +7,13 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   avatar: String,
-  like: [
+  likes: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Recipe",
+    },
+  ],
+  myRecipes: [
     {
       type: mongoose.Types.ObjectId,
       ref: "Recipe",

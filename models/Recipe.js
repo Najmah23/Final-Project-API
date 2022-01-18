@@ -1,6 +1,5 @@
 const mongoose = require("mongoose")
 const Joi = require("joi")
-const { string } = require("joi")
 
 const RatingSchema = new mongoose.Schema({
   userId: {
@@ -15,6 +14,7 @@ const recipeSchema = new mongoose.Schema({
   photo: String,
   ingredients: String,
   calories: Number,
+  steps: String,
   rating: [RatingSchema],
   ratingAverage: {
     type: Number,
@@ -46,6 +46,7 @@ const recipeAddjoi = Joi.object({
   types: Joi.string().valid("Breakfast", "Lunch", "Snack", "Dinner").required(),
   photo: Joi.string().uri().required(),
   ingredients: Joi.string().min(4).max(1000).required(),
+  steps: Joi.string().min(1).max(1000).allow(""),
   calories: Joi.number().min(0).max(1000).required(),
 })
 
@@ -54,6 +55,7 @@ const recipeEditjoi = Joi.object({
   types: Joi.string().valid("Breakfast", "Lunch", "Snack", "Dinner"),
   photo: Joi.string().uri(),
   ingredients: Joi.string().min(4).max(1000),
+  steps: Joi.string().min(1).max(1000).allow(""),
   calories: Joi.number().min(0).max(1000),
 })
 ratingJoi = Joi.object({

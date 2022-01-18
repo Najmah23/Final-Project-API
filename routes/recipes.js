@@ -41,11 +41,9 @@ router.get("/:id", checkAdmin, checkId, async (req, res) => {
       })
       .populate({
         path: "owner",
-        populate: {
-          path: "owner",
           select: "-password ",
         },
-      })
+      )
 
     if (!recipe) return res.status(404).send("recipe not found")
     res.json(recipe)
@@ -57,16 +55,19 @@ router.get("/:id", checkAdmin, checkId, async (req, res) => {
 
 router.post("/", checkToken, validateBody(recipeAddjoi), async (req, res) => {
   try {
-    const { title, types, photo, ingredients, calories } = req.body
+    const { title, types, photo, ingredients,steps, calories } = req.body
     const recipe = new Recipe({
       title,
       types,
       photo,
       ingredients,
+      steps,
       calories,
       owner: req.userId,
     })
     await recipe.save()
+    await User.findByIdAndUpdate(req.userId, { $push: { myRecipes: recipe._id } })
+
     res.json(recipe)
   } catch (error) {
     console.log(error)
@@ -77,15 +78,16 @@ router.post("/", checkToken, validateBody(recipeAddjoi), async (req, res) => {
 
 router.put("/:id", checkToken, checkId, validateBody(recipeEditjoi), async (req, res) => {
   try {
-    const { title, types, photo, ingredients, calories } = req.body
+    const { title, types, photo, ingredients,steps, calories } = req.body
 
     const recipeFound = await Recipe.findById(req.params.id)
-    if (recipeFound.owner.role === "Admin" && recipeFound.owner._id != req.userId)
+    const user = await User.findById(req.userId)
+    if (user.role !== "Admin" && recipeFound.owner != req.userId)
       return res.status(403).json("unauthorized action")
 
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
-      { $set: { title, types, photo, ingredients, calories } },
+      { $set: { title, types, photo, ingredients,steps, calories } },
       { new: true }
     )
     if (!recipe) return res.status(404).send("recipe not found")
@@ -98,9 +100,15 @@ router.put("/:id", checkToken, checkId, validateBody(recipeEditjoi), async (req,
 })
 // ------------delet recipe by id -------
 
-router.delete("/:id", checkAdmin, checkId, async (req, res) => {
+router.delete("/:id", checkToken, checkId, async (req, res) => {
+
   try {
-    await Comment.deleteMany({ reciId: req.params.id })
+    const recipeFound = await Recipe.findById(req.params.id)
+    const user = await User.findById(req.userId)
+    if (user.role !== "Admin" && recipeFound.owner != req.userId)
+      return res.status(403).json("unauthorized action")
+
+    await Comment.deleteMany({ recipeId: req.params.id })
 
     const recipe = await Recipe.findByIdAndRemove(req.params.id)
     if (!recipe) return res.status(404).send("recipe not found")
