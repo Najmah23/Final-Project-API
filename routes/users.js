@@ -118,6 +118,7 @@ router.get("/profile", checkToken, async (req, res) => {
     return res.status(500).send(error.message)
   }
 })
+// edt profile----------
 
 router.put("/profile", checkToken, validateBody(profileJoi), async (req, res) => {
   try {
