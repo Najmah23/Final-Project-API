@@ -43,9 +43,9 @@ const loginJoi = Joi.object({
   password: Joi.string().min(2).max(100).required(),
 })
 const profileJoi = Joi.object({
-  firstName: Joi.string().min(2).max(100),
-  lastName: Joi.string().min(2).max(100),
-  password: Joi.string().min(6).max(100),
+  firstName: Joi.string().min(2).max(100).allow(""),
+  lastName: Joi.string().min(2).max(100).allow(""),
+  password: Joi.string().min(6).max(100).allow(""),
   avatar: Joi.string().uri().min(2).max(2000),
 })
 const User = mongoose.model("User", userSchema)

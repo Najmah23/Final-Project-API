@@ -9,7 +9,9 @@ const users = require("./routes/users")
 const recipes = require("./routes/recipes")
 
 mongoose
-  .connect(`mongodb://localhost:27017/recipesDB`)
+  .connect(`mongodb+srv://najmah:${process.env.MONGODB_PASSWORD1}@cluster0.npdui.mongodb.net/RecipesDB?retryWrites=true&w=majority
+
+  `)
   .then(() => {
     console.log("Connected to MongoDB")
   })
