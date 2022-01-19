@@ -11,6 +11,8 @@ const checkId = require("../middleware/checkId")
 
 // -----------sign up--------------
 
+
+
 router.post("/signup", validateBody(signupJoi), async (req, res) => {
   try {
     const { firstName, lastName, email, password, avatar } = req.body
@@ -142,10 +144,12 @@ router.put("/profile", checkToken, validateBody(profileJoi), async (req, res) =>
 })
 // ----------User----------
 
-router.get("/users", checkAdmin, async (req, res) => {
+router.get("/", checkAdmin, async (req, res) => {
   const users = await User.find().select("-password -__v")
   res.json(users)
 })
+
+
 router.delete("/users/:id", checkAdmin, checkId, async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
