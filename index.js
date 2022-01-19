@@ -18,6 +18,10 @@ mongoose
   .catch(error => {
     console.log("Error conneting to MongoDB ", error)
   })
+
+
+
+  
 const app = express()
 app.use(express.json())
 app.use(cors())
