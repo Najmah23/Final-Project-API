@@ -55,7 +55,7 @@ const recipeEditjoi = Joi.object({
   types: Joi.string().valid("Breakfast", "Lunch", "Snack", "Dinner"),
   photo: Joi.string().uri(),
   ingredients: Joi.string().min(4),
-  steps: Joi.string().min(1).allow(""),
+  steps: Joi.string().min(1).max(10000).allow(""),
   calories: Joi.number().min(0).max(1000),
 })
 ratingJoi = Joi.object({
