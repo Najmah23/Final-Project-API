@@ -45,8 +45,8 @@ const recipeAddjoi = Joi.object({
   title: Joi.string().max(100).min(1).required(),
   types: Joi.string().valid("Breakfast", "Lunch", "Snack", "Dinner").required(),
   photo: Joi.string().uri().required(),
-  ingredients: Joi.string().min(4).max(1000).required(),
-  steps: Joi.string().min(1).max(1000).allow(""),
+  ingredients: Joi.string().min(4).required(),
+  steps: Joi.string().min(1).allow(""),
   calories: Joi.number().min(0).max(1000).required(),
 })
 
@@ -54,8 +54,8 @@ const recipeEditjoi = Joi.object({
   title: Joi.string().max(100).min(1),
   types: Joi.string().valid("Breakfast", "Lunch", "Snack", "Dinner"),
   photo: Joi.string().uri(),
-  ingredients: Joi.string().min(4).max(1000),
-  steps: Joi.string().min(1).max(1000).allow(""),
+  ingredients: Joi.string().min(4),
+  steps: Joi.string().min(1).allow(""),
   calories: Joi.number().min(0).max(1000),
 })
 ratingJoi = Joi.object({
