@@ -11,8 +11,6 @@ const checkId = require("../middleware/checkId")
 
 // -----------sign up--------------
 
-
-
 router.post("/signup", validateBody(signupJoi), async (req, res) => {
   try {
     const { firstName, lastName, email, password, avatar } = req.body
